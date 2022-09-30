@@ -31,9 +31,7 @@ function toGithub(){
 </script>
 
 <style lang="scss" scoped>
-:root{
-    color-scheme: dark;
-}
+
 #theme-wrap {
     height: 12vh;
     width: 8%;
