@@ -31,10 +31,9 @@ function toGithub(){
 </script>
 
 <style lang="scss" scoped>
-
 #theme-wrap {
     height: 12vh;
-    width: 8%;
+    width: 5rem;
     margin: 10px auto;
     display: flex;
     justify-content: space-around;
@@ -64,4 +63,6 @@ function toGithub(){
         background:no-repeat center/100% url('../assets/img/github-fill.png');
     }
 }
+
+
 </style>

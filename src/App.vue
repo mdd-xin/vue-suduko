@@ -105,6 +105,9 @@ watch(arr, () => {
 }
 </style>
 <style lang="scss" scoped>
+
+$dark:rgb(44,54,79);
+$light:rgb(119, 123, 168);
 .wrap {
   height: 300px;
   width: 300px;
@@ -117,11 +120,11 @@ watch(arr, () => {
 }
 // switch theme
 .theme-light{
-  background-color: rgb(119, 123, 168);
+  background-color: $dark;
 }
 
 .theme-dark{
-  background-color: rgb(44,54,79);
+  background-color: $light;
 }
 
 .content_wrap {
