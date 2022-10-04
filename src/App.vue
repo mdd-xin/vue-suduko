@@ -15,6 +15,7 @@
 <script setup>
 import {ref,reactive, watch, onMounted, watchEffect } from 'vue';
 import switchTheme from './components/switchTheme.vue';
+
 class Block {
   constructor(value, x, y) {
     this.value = value;
