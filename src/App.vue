@@ -13,7 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import {ref,reactive, watch, onMounted, watchEffect } from 'vue';
+import { thisExpression } from '@babel/types';
+import {ref,reactive, watch, onMounted,nextTick} from 'vue';
 import switchTheme from './components/switchTheme.vue';
 
 interface Box{
@@ -29,11 +30,14 @@ class Block implements Box {
   x:number;
   y:number;
   el:HTMLElement;
-  constructor(value, x, y) {
+  constructor(value:number, x:number, y:number) {
     this.value = value;
     this.x = x;
     this.y = y;
-    this.el = document.querySelector(`#item-${this.x}${this.y}`) as HTMLElement;
+    // this.el = document.querySelector(`#item-${this.x}${this.y}`) as HTMLElement;
+    nextTick(()=>{
+      this.el=document.querySelector(`#item-${this.x}${this.y}`) as HTMLElement;
+    })
   }
   shake() {
     this.el.classList.add('shake');
@@ -51,33 +55,41 @@ let sudukoBox:Box[][]=reactive([[],[],[]]);
 // let result=ref('你会玩不啊~');
 let targetCoord:Box = reactive({}) as Box;
 onMounted(() => {
-  watchEffect(() => {
+  // 初始化
+  nextTick(()=>{
+    console.log(document.querySelector('.block'));
+  })
     for (let i = 0; i < arr.length; i++) {
       for (let j = 0; j < arr[i].length; j++) {
-          // arr[i][j] = new Block(arr[i][j], i, j);
           sudukoBox[i][j]=new Block(arr[i][j],i,j);
         if (sudukoBox[i][j].value == 0) {
           targetCoord = sudukoBox[i][j];
         }
       }
     }
-  })
+    console.log(sudukoBox);
+    
 })
-
+watch(sudukoBox,()=>{
+  // console.log(value);
+  console.log('改变了');
+  for (let i = 0; i < arr.length; i++) {
+      for (let j = 0; j < arr[i].length; j++) {
+        if (sudukoBox[i][j].value == 0) {
+          targetCoord = sudukoBox[i][j];
+        }
+      }
+    }
+})
 function exchange(s:Box, t:Box) {
-  console.log(sudukoBox[s.x][s.y].value,sudukoBox[t.x][t.y].value);
-  console.log(sudukoBox);
-  // let num = sudukoBox[s.x][s.y].value;
-  // console.log(num);
-  // sudukoBox[s.x][s.y].value = sudukoBox[t.x][t.y].value;
-     sudukoBox[s.x][s.y].value=9
-     console.log(sudukoBox);
-  // console.log('a',sudukoBox[s.x][s.y].value);
-  // sudukoBox[t.x][t.y].value = num;
-  
+  let num = sudukoBox[s.x][s.y].value;
+  sudukoBox[s.x][s.y].value = sudukoBox[t.x][t.y].value;
+  sudukoBox[t.x][t.y].value = num;
 }
 
 function moveBlock(block:Box) {
+  console.log(block);
+  
   if (block.x == targetCoord.x) {
     if (block.y == targetCoord.y + 1 || block.y == targetCoord.y - 1) {
       exchange(block, targetCoord)
