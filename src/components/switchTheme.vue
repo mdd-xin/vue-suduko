@@ -15,7 +15,7 @@ const props=defineProps({
         type:String
     }
 })
-console.log(props);
+// console.log(props);
 function switchTheme(){
     if(props.curTheme=='light'){
         theme.value.classList.replace('light','dark');

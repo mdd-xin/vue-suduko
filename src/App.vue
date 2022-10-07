@@ -1,7 +1,7 @@
 <template>
   <div id="title">suduko</div>
   <div class="wrap theme-light" ref="wrap">
-    <div class="content_wrap" v-for="(item,x) in arr" :key="x">
+    <div class="content_wrap" v-for="(item,x) in sudukoBox" :key="x">
       <div :class="{'block':'true','target_block':block.value==0}" v-for="(block,y) in item" :id="'item-'+x+y"
         @click="moveBlock(block)" :key="y">
         <!-- {{x}}{{y}} -->
@@ -12,16 +12,28 @@
   <switch-theme @cutTheme='cutTheme' :curTheme='theme'/>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {ref,reactive, watch, onMounted, watchEffect } from 'vue';
 import switchTheme from './components/switchTheme.vue';
 
-class Block {
+interface Box{
+  value:number,
+  x:number,
+  y:number,
+  el:HTMLElement,
+  shake():void
+}
+
+class Block implements Box {
+  value:number;
+  x:number;
+  y:number;
+  el:HTMLElement;
   constructor(value, x, y) {
     this.value = value;
     this.x = x;
     this.y = y;
-    this.el = document.querySelector(`#item-${this.x}${this.y}`);
+    this.el = document.querySelector(`#item-${this.x}${this.y}`) as HTMLElement;
   }
   shake() {
     this.el.classList.add('shake');
@@ -30,36 +42,42 @@ class Block {
     }, 800)
   }
 }
-let arr = reactive([
+let arr:number[][] = reactive([
   [1, 2, 3],
   [4, 5, 6],
   [7, 0, 8],
 ])
+let sudukoBox:Box[][]=reactive([[],[],[]]);
 // let result=ref('你会玩不啊~');
-let targetCoord = reactive({})
-
+let targetCoord:Box = reactive({}) as Box;
 onMounted(() => {
   watchEffect(() => {
     for (let i = 0; i < arr.length; i++) {
       for (let j = 0; j < arr[i].length; j++) {
-        if (typeof arr[i][j] == 'number') {
-          arr[i][j] = new Block(arr[i][j], i, j);
-        }
-        if (arr[i][j].value == 0) {
-          targetCoord = arr[i][j];
+          // arr[i][j] = new Block(arr[i][j], i, j);
+          sudukoBox[i][j]=new Block(arr[i][j],i,j);
+        if (sudukoBox[i][j].value == 0) {
+          targetCoord = sudukoBox[i][j];
         }
       }
     }
   })
 })
 
-function exchange(s, t) {
-  let num = arr[s.x][s.y].value;
-  arr[s.x][s.y].value = arr[t.x][t.y].value;
-  arr[t.x][t.y].value = num;
+function exchange(s:Box, t:Box) {
+  console.log(sudukoBox[s.x][s.y].value,sudukoBox[t.x][t.y].value);
+  console.log(sudukoBox);
+  // let num = sudukoBox[s.x][s.y].value;
+  // console.log(num);
+  // sudukoBox[s.x][s.y].value = sudukoBox[t.x][t.y].value;
+     sudukoBox[s.x][s.y].value=9
+     console.log(sudukoBox);
+  // console.log('a',sudukoBox[s.x][s.y].value);
+  // sudukoBox[t.x][t.y].value = num;
+  
 }
 
-function moveBlock(block) {
+function moveBlock(block:Box) {
   if (block.x == targetCoord.x) {
     if (block.y == targetCoord.y + 1 || block.y == targetCoord.y - 1) {
       exchange(block, targetCoord)
@@ -78,9 +96,9 @@ function moveBlock(block) {
     block.shake();
   }
 }
-let wrap=ref(null);
+let wrap:object=ref(null); 
 let theme=ref('light')
-function cutTheme(color){
+function cutTheme(color:string){
   theme.value=color;
   if(theme.value=='light'){
     wrap.value.classList.replace('theme-dark','theme-light');
@@ -89,9 +107,9 @@ function cutTheme(color){
   }
 }
 
-watch(arr, () => {
+watch(sudukoBox, () => {
   let str = ''
-  arr.flat().forEach(el => { str += el.value })
+  sudukoBox.flat().forEach(el => { str += el.value })
   // console.log(arr.flat().reduce((pre, cur) => { console.log(cur); }));
   if (str == '123456780') {
     console.log('成功了');
