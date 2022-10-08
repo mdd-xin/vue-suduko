@@ -1,144 +1,159 @@
 <template>
   <div id="title">suduko</div>
-  <div class="wrap theme-light" ref="wrap">
-    <div class="content_wrap" v-for="(item,x) in sudukoBox" :key="x">
-      <div :class="{'block':'true','target_block':block.value==0}" v-for="(block,y) in item" :id="'item-'+x+y"
-        @click="moveBlock(block)" :key="y">
+  <div
+    class="wrap theme-light"
+    ref="wrap"
+  >
+    <div
+      class="content_wrap"
+      v-for="(item,x) in sudukoBox"
+      :key="x"
+    >
+      <div
+        :class="{'block':'true','target_block':block.value==0}"
+        v-for="(block,y) in item"
+        :id="'item-'+x+y"
+        @click="moveBlock(block)"
+        :key="y"
+      >
         <!-- {{x}}{{y}} -->
         {{block.value}}
       </div>
     </div>
   </div>
-  <switch-theme @cutTheme='cutTheme' :curTheme='theme'/>
+  <switch-theme
+    @cutTheme='cutTheme'
+    :curTheme='theme'
+  />
 </template>
 
 <script setup lang="ts">
-import { thisExpression } from '@babel/types';
-import {ref,reactive, watch, onMounted,nextTick} from 'vue';
-import switchTheme from './components/switchTheme.vue';
+import { thisExpression } from "@babel/types";
+import { ref, reactive, watch, onMounted, nextTick } from "vue";
+import switchTheme from "./components/switchTheme.vue";
 
-interface Box{
-  value:number,
-  x:number,
-  y:number,
-  el:HTMLElement,
-  shake():void
+interface Box {
+  value: number;
+  x: number;
+  y: number;
+  el: HTMLElement;
+  shake(): void;
 }
 
 class Block implements Box {
-  value:number;
-  x:number;
-  y:number;
-  el:HTMLElement;
-  constructor(value:number, x:number, y:number) {
+  value: number;
+  x: number;
+  y: number;
+  el: HTMLElement;
+  constructor(value: number, x: number, y: number) {
     this.value = value;
     this.x = x;
     this.y = y;
     // this.el = document.querySelector(`#item-${this.x}${this.y}`) as HTMLElement;
-    nextTick(()=>{
-      this.el=document.querySelector(`#item-${this.x}${this.y}`) as HTMLElement;
-    })
+    nextTick(() => {
+      this.el = document.querySelector(
+        `#item-${this.x}${this.y}`
+      ) as HTMLElement;
+    });
   }
   shake() {
-    this.el.classList.add('shake');
+    this.el.classList.add("shake");
     setTimeout(() => {
-      this.el.classList.remove('shake');
-    }, 800)
+      this.el.classList.remove("shake");
+    }, 800);
   }
 }
-let arr:number[][] = reactive([
+let arr: number[][] = reactive([
   [1, 2, 3],
   [4, 5, 6],
   [7, 0, 8],
-])
-let sudukoBox:Box[][]=reactive([[],[],[]]);
+]);
+let sudukoBox: Box[][] = reactive([[], [], []]);
 // let result=ref('你会玩不啊~');
-let targetCoord:Box = reactive({}) as Box;
+let targetCoord: Box = reactive({}) as Box;
 onMounted(() => {
   // 初始化
-  nextTick(()=>{
-    console.log(document.querySelector('.block'));
-  })
-    for (let i = 0; i < arr.length; i++) {
-      for (let j = 0; j < arr[i].length; j++) {
-          sudukoBox[i][j]=new Block(arr[i][j],i,j);
-        if (sudukoBox[i][j].value == 0) {
-          targetCoord = sudukoBox[i][j];
-        }
-      }
-    }
-    console.log(sudukoBox);
-    
-})
-watch(sudukoBox,()=>{
-  // console.log(value);
-  console.log('改变了');
+  nextTick(() => {
+    console.log(document.querySelector(".block"));
+  });
   for (let i = 0; i < arr.length; i++) {
-      for (let j = 0; j < arr[i].length; j++) {
-        if (sudukoBox[i][j].value == 0) {
-          targetCoord = sudukoBox[i][j];
-        }
+    for (let j = 0; j < arr[i].length; j++) {
+      sudukoBox[i][j] = new Block(arr[i][j], i, j);
+      if (sudukoBox[i][j].value == 0) {
+        targetCoord = sudukoBox[i][j];
       }
     }
-})
-function exchange(s:Box, t:Box) {
+  }
+  console.log(sudukoBox);
+});
+watch(sudukoBox, () => {
+  // console.log(value);
+  console.log("改变了");
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = 0; j < arr[i].length; j++) {
+      if (sudukoBox[i][j].value == 0) {
+        targetCoord = sudukoBox[i][j];
+      }
+    }
+  }
+});
+function exchange(s: Box, t: Box) {
   let num = sudukoBox[s.x][s.y].value;
   sudukoBox[s.x][s.y].value = sudukoBox[t.x][t.y].value;
   sudukoBox[t.x][t.y].value = num;
 }
 
-function moveBlock(block:Box) {
+function moveBlock(block: Box) {
   console.log(block);
-  
+
   if (block.x == targetCoord.x) {
     if (block.y == targetCoord.y + 1 || block.y == targetCoord.y - 1) {
-      exchange(block, targetCoord)
+      exchange(block, targetCoord);
     } else {
       block.shake();
     }
-  }
-  else if (block.y == targetCoord.y) {
+  } else if (block.y == targetCoord.y) {
     if (block.x == targetCoord.x + 1 || block.x == targetCoord.x - 1) {
-      exchange(block, targetCoord)
+      exchange(block, targetCoord);
     } else {
       block.shake();
     }
-  }
-  else {
+  } else {
     block.shake();
   }
 }
-let wrap:object=ref(null); 
-let theme=ref('light')
-function cutTheme(color:string){
-  theme.value=color;
-  if(theme.value=='light'){
-    wrap.value.classList.replace('theme-dark','theme-light');
-  }else{
-    wrap.value.classList.replace('theme-light','theme-dark');
+let wrap: object = ref(null);
+let theme = ref("light");
+function cutTheme(color: string) {
+  theme.value = color;
+  if (theme.value == "light") {
+    wrap.value.classList.replace("theme-dark", "theme-light");
+  } else {
+    wrap.value.classList.replace("theme-light", "theme-dark");
   }
 }
 
 watch(sudukoBox, () => {
-  let str = ''
-  sudukoBox.flat().forEach(el => { str += el.value })
+  let str = "";
+  sudukoBox.flat().forEach((el) => {
+    str += el.value;
+  });
   // console.log(arr.flat().reduce((pre, cur) => { console.log(cur); }));
-  if (str == '123456780') {
-    console.log('成功了');
+  if (str == "123456780") {
+    console.log("成功了");
   }
-})
+});
 </script>
 
 <style>
-  * {
+* {
   margin: 0;
   padding: 0;
 }
 </style>
 <style lang="scss" scoped>
-
-$dark:rgb(44,54,79);
-$light:rgb(119, 123, 168);
+$dark: rgb(44, 54, 79);
+$light: rgb(119, 123, 168);
 .wrap {
   height: 300px;
   width: 300px;
@@ -150,11 +165,11 @@ $light:rgb(119, 123, 168);
   margin: 10px auto;
 }
 // switch theme
-.theme-light{
+.theme-light {
   background-color: $dark;
 }
 
-.theme-dark{
+.theme-dark {
   background-color: $light;
 }
 
@@ -200,7 +215,6 @@ $light:rgb(119, 123, 168);
 }
 
 @keyframes shake {
-
   10%,
   90% {
     transform: translate3d(-1px, 0, 0);
