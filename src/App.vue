@@ -9,16 +9,21 @@
       v-for="(item,x) in sudukoBox"
       :key="x"
     >
-      <div
+      <!-- <div
         :class="{'block':'true','target_block':block.value==0}"
         v-for="(block,y) in item"
         :id="'item-'+x+y"
         @click="moveBlock(block)"
         :key="y"
       >
-        <!-- {{x}}{{y}} -->
         {{block.value}}
-      </div>
+      </div> -->
+      <suduko-item
+        v-for="(block,y) in item"
+        :key="y"
+        :block="block"
+        @swop="swopBox"
+      ></suduko-item>
     </div>
   </div>
   <switch-theme
@@ -28,39 +33,24 @@
 </template>
 
 <script setup lang="ts">
-import { thisExpression } from "@babel/types";
 import { ref, reactive, watch, onMounted, nextTick } from "vue";
 import switchTheme from "./components/switchTheme.vue";
+import sudukoItem from "./components/sudukoItem.vue";
 
 interface Box {
   value: number;
   x: number;
   y: number;
-  el: HTMLElement;
-  shake(): void;
 }
 
 class Block implements Box {
   value: number;
   x: number;
   y: number;
-  el: HTMLElement;
   constructor(value: number, x: number, y: number) {
     this.value = value;
     this.x = x;
     this.y = y;
-    // this.el = document.querySelector(`#item-${this.x}${this.y}`) as HTMLElement;
-    nextTick(() => {
-      this.el = document.querySelector(
-        `#item-${this.x}${this.y}`
-      ) as HTMLElement;
-    });
-  }
-  shake() {
-    this.el.classList.add("shake");
-    setTimeout(() => {
-      this.el.classList.remove("shake");
-    }, 800);
   }
 }
 let arr: number[][] = reactive([
@@ -86,6 +76,27 @@ onMounted(() => {
   }
   console.log(sudukoBox);
 });
+function swopBox(block) {
+  console.log(block);
+  if (block.x == targetCoord.x) {
+    if (block.y == targetCoord.y + 1 || block.y == targetCoord.y - 1) {
+      exchange(block, targetCoord);
+    } else {
+      // block.shake();
+      console.log("颤抖");
+    }
+  } else if (block.y == targetCoord.y) {
+    if (block.x == targetCoord.x + 1 || block.x == targetCoord.x - 1) {
+      exchange(block, targetCoord);
+    } else {
+      // block.shake();
+      console.log("颤抖");
+    }
+  } else {
+    // block.shake();
+    console.log("颤抖");
+  }
+}
 watch(sudukoBox, () => {
   // console.log(value);
   console.log("改变了");
@@ -103,25 +114,25 @@ function exchange(s: Box, t: Box) {
   sudukoBox[t.x][t.y].value = num;
 }
 
-function moveBlock(block: Box) {
-  console.log(block);
+// function moveBlock(block: Box) {
+//   console.log(block);
 
-  if (block.x == targetCoord.x) {
-    if (block.y == targetCoord.y + 1 || block.y == targetCoord.y - 1) {
-      exchange(block, targetCoord);
-    } else {
-      block.shake();
-    }
-  } else if (block.y == targetCoord.y) {
-    if (block.x == targetCoord.x + 1 || block.x == targetCoord.x - 1) {
-      exchange(block, targetCoord);
-    } else {
-      block.shake();
-    }
-  } else {
-    block.shake();
-  }
-}
+//   if (block.x == targetCoord.x) {
+//     if (block.y == targetCoord.y + 1 || block.y == targetCoord.y - 1) {
+//       exchange(block, targetCoord);
+//     } else {
+//       block.shake();
+//     }
+//   } else if (block.y == targetCoord.y) {
+//     if (block.x == targetCoord.x + 1 || block.x == targetCoord.x - 1) {
+//       exchange(block, targetCoord);
+//     } else {
+//       block.shake();
+//     }
+//   } else {
+//     block.shake();
+//   }
+// }
 let wrap: object = ref(null);
 let theme = ref("light");
 function cutTheme(color: string) {
