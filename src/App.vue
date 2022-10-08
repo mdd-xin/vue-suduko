@@ -6,6 +6,7 @@
   >
     <div
       class="content_wrap"
+      ref="sudukoWrap"
       v-for="(item,x) in sudukoBox"
       :key="x"
     >
@@ -67,14 +68,18 @@ onMounted(() => {
   }
   console.log(sudukoBox);
 });
+
+// 颤抖
 function shake(node) {
   node.classList.add("shake");
   setTimeout(() => {
     node.classList.remove("shake");
   }, 800);
 }
-function swopBox(block, box) {
-  console.log(box);
+
+const sudukoWrap=ref('null');
+// 交换
+function swopBox(block:Box, box:HTMLDivElement) {
   if (block.x == targetCoord.x) {
     if (block.y == targetCoord.y + 1 || block.y == targetCoord.y - 1) {
       exchange(block, targetCoord);
@@ -92,8 +97,6 @@ function swopBox(block, box) {
   }
 }
 watch(sudukoBox, () => {
-  // console.log(value);
-  console.log("改变了");
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < arr[i].length; j++) {
       if (sudukoBox[i][j].value == 0) {

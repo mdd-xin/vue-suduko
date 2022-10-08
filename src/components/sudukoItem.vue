@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, nextTick } from "vue";
+import { onMounted, ref } from "vue";
 const props = defineProps({
   block: Object,
 });
@@ -25,7 +25,7 @@ onMounted(() => {
     characterDataOldValue: true,
     subtree: true,
   };
-  let mo = new MutationObserver((mutationList, observer) => {
+  let mo = new MutationObserver((mutationList) => {
     for (let mutation of mutationList) {
       console.log(mutation);
       if (
