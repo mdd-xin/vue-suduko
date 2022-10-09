@@ -10,12 +10,13 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import {Box} from '../utils/Block'
 const props = defineProps({
-  block: Object,
+  block: Object as ()=>Box,
 });
 const emits = defineEmits(["swop"]);
-function swop(block) {
-  emits("swop", block, blockBox.value);
+function swop(block:Box,box:HTMLDivElement) {
+  emits("swop", block, box);
 }
 let blockBox = ref(null);
 onMounted(() => {
@@ -24,13 +25,9 @@ onMounted(() => {
     characterDataOldValue: true,
     subtree: true,
   };
-  let mo = new MutationObserver((mutationList) => {
+  let mo = new MutationObserver((mutationList:MutationRecord[]) => {
     for (let mutation of mutationList) {
-      console.log(mutation);
-      if (
-        mutation.type == "characterData" &&
-        mutation.target.data != mutation.oldValue
-      ) {
+      if (mutation.type == "characterData") {
         blockBox.value.innerText = mutation.oldValue;
       }
     }

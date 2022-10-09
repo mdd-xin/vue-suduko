@@ -20,25 +20,11 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, nextTick } from "vue";
+import {Box,Block} from './utils/Block'
 import switchTheme from "./components/switchTheme.vue";
 import sudukoItem from "./components/sudukoItem.vue";
-import { createData } from "./utils/createData.js";
-interface Box {
-  value: number;
-  x: number;
-  y: number;
-}
+// import { createData } from "./utils/createData.js";
 
-class Block implements Box {
-  value: number;
-  x: number;
-  y: number;
-  constructor(value: number, x: number, y: number) {
-    this.value = value;
-    this.x = x;
-    this.y = y;
-  }
-}
 let arr: number[][] = reactive([
   [1, 2, 3],
   [4, 5, 6],
@@ -105,10 +91,11 @@ function exchange(s: Box, t: Box) {
   sudukoBox[t.x][t.y].value = num;
 }
 
-let wrap: object = ref(null);
+let wrap = ref(null);
 let theme = ref("light");
+
 function cutTheme(color: string) {
-  theme.value = color;
+    theme.value = color;
   if (theme.value == "light") {
     wrap.value.classList.replace("theme-dark", "theme-light");
   } else {
