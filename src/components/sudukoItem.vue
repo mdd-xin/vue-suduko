@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import {Box} from '../utils/Block'
 const props = defineProps({
   block: Object as ()=>Box,
@@ -19,8 +19,7 @@ function swop(block:Box,box:HTMLDivElement) {
   emits("swop", block, box);
 }
 let blockBox = ref(null);
-onMounted(() => {
-  let config = {
+let config = {
     characterData: true,
     characterDataOldValue: true,
     subtree: true,
@@ -32,8 +31,12 @@ onMounted(() => {
       }
     }
   });
+onMounted(() => {
   mo.observe(blockBox.value, config);
 });
+onUnmounted(()=>{
+  mo.disconnect();
+})
 </script>
 
 <style lang="scss" scoped>
