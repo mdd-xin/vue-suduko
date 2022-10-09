@@ -1,34 +1,28 @@
 <template>
   <div id="title">suduko</div>
-  <div
-    class="wrap theme-light"
-    ref="wrap"
-  >
+  <div class="wrap theme-light" ref="wrap">
     <div
       class="content_wrap"
       ref="sudukoWrap"
-      v-for="(item,x) in sudukoBox"
+      v-for="(item, x) in sudukoBox"
       :key="x"
     >
       <suduko-item
-        v-for="(block,y) in item"
+        v-for="(block, y) in item"
         :key="y"
         :block="block"
         @swop="swopBox"
       ></suduko-item>
     </div>
   </div>
-  <switch-theme
-    @cutTheme='cutTheme'
-    :curTheme='theme'
-  />
+  <switch-theme @cutTheme="cutTheme" :curTheme="theme" />
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, nextTick } from "vue";
 import switchTheme from "./components/switchTheme.vue";
 import sudukoItem from "./components/sudukoItem.vue";
-
+import { createData } from "./utils/createData.js";
 interface Box {
   value: number;
   x: number;
@@ -77,9 +71,9 @@ function shake(node) {
   }, 800);
 }
 
-const sudukoWrap=ref('null');
+
 // 交换
-function swopBox(block:Box, box:HTMLDivElement) {
+function swopBox(block: Box, box: HTMLDivElement) {
   if (block.x == targetCoord.x) {
     if (block.y == targetCoord.y + 1 || block.y == targetCoord.y - 1) {
       exchange(block, targetCoord);

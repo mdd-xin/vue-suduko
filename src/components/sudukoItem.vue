@@ -1,5 +1,4 @@
 <template>
-  <!-- bolck对象 -->
   <div
     :class="{'block':'true','target_block':props.block.value==0}"
     @click="swop(props.block,blockBox)"
